@@ -1,0 +1,30 @@
+# Model weights and adapters
+cybersec-qlora/
+*.bin
+*.safetensors
+*.pt
+*.pth
+
+# Dataset cache
+~/.cache/huggingface/
+.cache/
+
+# Archives
+*.zip
+*.tar.gz
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.env
+venv/
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
