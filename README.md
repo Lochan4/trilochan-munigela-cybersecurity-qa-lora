@@ -90,7 +90,7 @@ Fine-tuning **microsoft/phi-2** (2.7B) on a cybersecurity Q&A dataset using **Lo
 | Gradient checkpointing    | enabled            |
 | Eval / save every         | 500 steps          |
 
-**Approximate training time:** ~3–4 hours on T4, ~1 hour on H100
+**Actual training time:** 9h 27m on H100 80GB (3 epochs, 79,892 examples)
 
 **Challenges:**
 - Flash Attention 2 requires CUDA and a compatible GPU — falls back gracefully if unavailable
@@ -104,12 +104,12 @@ Fine-tuning **microsoft/phi-2** (2.7B) on a cybersecurity Q&A dataset using **Lo
 
 **ROUGE Scores (validation, 10 samples):**
 
-| Metric    | Score |
-|-----------|-------|
-| rouge1    | TBD   |
-| rouge2    | TBD   |
-| rougeL    | TBD   |
-| rougeLsum | TBD   |
+| Metric    | Score  |
+|-----------|--------|
+| rouge1    | 0.3885 |
+| rouge2    | 0.1183 |
+| rougeL    | 0.1831 |
+| rougeLsum | 0.1824 |
 
 **Learning curve:** see `results/learning_curve.png`
 

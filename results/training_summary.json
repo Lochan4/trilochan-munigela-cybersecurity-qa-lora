@@ -1,0 +1,15 @@
+{
+  "model_id": "microsoft/phi-2",
+  "dataset_id": "AlicanKiraz0/Cybersecurity-Dataset-Fenrir-v2.0",
+  "quantization": "none (bf16 full precision)",
+  "epochs": 3,
+  "batch_size": 16,
+  "effective_batch": 32,
+  "learning_rate": 0.0002,
+  "max_length": 1024,
+  "lora_r": 64,
+  "lora_alpha": 128,
+  "train_examples": 79892,
+  "val_examples": 19974,
+  "wall_time_sec": 34079
+}

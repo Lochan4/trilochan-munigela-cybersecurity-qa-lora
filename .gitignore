@@ -1,7 +1,7 @@
 # Model weights and adapters
 cybersec-qlora/
+adapter/adapter_model.safetensors
 *.bin
-*.safetensors
 *.pt
 *.pth
 
