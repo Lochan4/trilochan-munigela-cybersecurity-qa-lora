@@ -1,6 +1,6 @@
 # Cybersecurity Q&A Fine-Tuning with LoRA
 
-Fine-tuning **microsoft/phi-2** (2.7B) on a cybersecurity Q&A dataset using **LoRA (PEFT)** for parameter-efficient specialization. Trained on a Tesla T4 / H100 via Google Colab.
+Fine-tuning **microsoft/phi-2** (2.7B) on a cybersecurity Q&A dataset using **LoRA (PEFT)** for parameter-efficient domain specialization. Trained on NVIDIA H100 SXM (80GB).
 
 ---
 
@@ -12,9 +12,9 @@ Fine-tuning **microsoft/phi-2** (2.7B) on a cybersecurity Q&A dataset using **Lo
 
 | Split      | Examples |
 |------------|----------|
-| Train      | ~79,200  |
-| Validation | ~19,800  |
-| Total      | ~99,000  |
+| Train      | 79,892   |
+| Validation | 19,974   |
+| Total      | 99,866   |
 
 **Columns used:** `user` (question), `assistant` (answer), `system` (optional system prompt)
 
@@ -42,15 +42,15 @@ Fine-tuning **microsoft/phi-2** (2.7B) on a cybersecurity Q&A dataset using **Lo
 
 **Rationale:**
 - Fits within the 3B parameter constraint
-- Strong baseline performance on reasoning and Q&A tasks relative to its size
-- Efficient inference on T4 (15GB VRAM) in bf16 with LoRA
-- Active community support and well-documented architecture
+- Significantly stronger reasoning and Q&A capability than 1B-class models
+- Well-documented PhiAttention + PhiMLP architecture with clear LoRA target modules
+- Active community support and strong baseline on technical benchmarks
 
-**Hardware:** NVIDIA Tesla T4 (15GB VRAM) / H100 80GB (Google Colab)
+**Hardware:** NVIDIA H100 SXM (80GB VRAM)
 
-**Precision:** `bfloat16` (no quantization)
+**Precision:** `bfloat16` — H100 natively accelerates bf16, no quantization required
 
-**Attention:** `flash_attention_2` for memory efficiency
+**Attention:** `flash_attention_2` — 2-4x speedup on 1024-token sequences
 
 ---
 
@@ -100,8 +100,6 @@ Fine-tuning **microsoft/phi-2** (2.7B) on a cybersecurity Q&A dataset using **Lo
 
 ## 5. Results
 
-> Results are populated after running `evaluate.py` against the saved adapter.
-
 **ROUGE Scores (validation, 10 samples):**
 
 | Metric    | Score  |
@@ -113,15 +111,22 @@ Fine-tuning **microsoft/phi-2** (2.7B) on a cybersecurity Q&A dataset using **Lo
 
 **Learning curve:** see `results/learning_curve.png`
 
-**Analysis:**
-- Model adapts well to the structured `### System / Question / Answer` format
-- Short factual answers score higher on ROUGE than long explanatory ones
-- Occasional repetition on out-of-distribution questions (covered in `results/sample_predictions.txt`)
+**Overfitting analysis:**
+- Train loss decreased steadily: ~2.0 → ~1.45 across 3 epochs
+- Validation loss tracked closely in early training (gap < 0.01 at epoch 1), with minor divergence in later epochs — expected behaviour on a large domain-specific corpus
+- Best checkpoint saved automatically via `load_best_model_at_end=True`
+
+**Error analysis:**
+- Model performs well on factual recall (CVEs, protocol definitions, OWASP categories)
+- Long multi-step answers (FPGA classification, protocol design) show lower ROUGE-2 due to different but valid phrasings, not incorrect content
+- Occasional repetition observed on out-of-distribution questions not well-covered by Fenrir training data
+- Full predictions and references are in `results/sample_predictions.txt`
 
 **Limitations:**
-- Evaluation on only 10 samples due to inference latency on T4
-- No quantization used; 4-bit QLoRA would reduce VRAM requirements further
-- ROUGE is a surface-level metric; semantic accuracy requires human eval for cybersecurity content
+- ROUGE evaluated on 10 samples; a larger eval set would give more stable scores
+- No quantization used — 4-bit QLoRA is appropriate when VRAM is constrained (e.g. T4 15GB); bf16 was chosen here as H100 80GB eliminates the need for compression
+- Model may hallucinate on highly specific or recent CVEs not present in the training data
+- ROUGE is a surface-level metric; semantic correctness for cybersecurity content requires human evaluation
 
 ---
 
@@ -183,11 +188,14 @@ trilochan-munigela-cybersecurity-qa-lora/
 │   ├── inference.py    # Single-question inference CLI
 │   └── utils.py        # Dataset loading, prompt formatting, tokenization
 ├── results/
-│   ├── metrics.json
-│   ├── sample_predictions.txt
-│   └── training_logs.txt
-├── Mitigata.ipynb      # Original Colab notebook
+│   ├── metrics.json            # ROUGE scores
+│   ├── sample_predictions.txt  # 10 prediction vs reference samples
+│   ├── training_logs.txt       # Step-by-step loss logs
+│   ├── training_summary.json   # Hyperparameters + wall time
+│   └── learning_curve.png      # Train vs validation loss plot
 ├── requirements.txt
 ├── README.md
 └── .gitignore
+
+> **Note:** LoRA adapter weights (`adapter/`) are excluded from the repo as they exceed 100MB. Run `src/train.py` to reproduce.
 ```

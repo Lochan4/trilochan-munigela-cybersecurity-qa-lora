@@ -25,6 +25,10 @@ venv/
 
 # Jupyter
 .ipynb_checkpoints/
+Untitled.ipynb
+
+# Training checkpoints
+checkpoints/
 
 # OS
 .DS_Store

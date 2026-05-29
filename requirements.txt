@@ -3,9 +3,10 @@ transformers==4.51.3
 accelerate==1.6.0
 peft==0.15.2
 datasets==3.5.0
-evaluate
-rouge_score
-matplotlib
-numpy
-scipy
-flash-attn
+evaluate==0.4.3
+rouge_score==0.1.2
+matplotlib==3.10.1
+numpy==2.2.5
+scipy==1.15.3
+# flash-attn requires CUDA and compiles from source — install separately:
+# pip install flash-attn --no-build-isolation
